@@ -1,0 +1,216 @@
+---
+output: pdf_document
+fontsize: 12pt
+numbersections: true
+header-includes:
+  - \usepackage{fancyhdr}
+  - \pagestyle{plain}
+  - \fancyhf{}
+  - \fancypagestyle{no_number}{\renewcommand{\headrulewidth}{0pt}\fancyhf{}\fancyfoot[C]{}}
+  - \fancyfoot[C]{\thepage}
+---
+
+\small
+
+```{=tex}
+
+\begin{flushright}
+
+\href{mailto:namatulich@sun.ac.za}{namatulich@sun.ac.za}
+
+\end{flushright}
+
+```
+
+
+\vspace{50pt}
+
+\large
+
+**Sample Code** \newline
+
+\normalsize
+
+Details here 
+
+\hrulefill
+
+**Executive Summary**
+
+Summary here \newline
+
+\hrulefill
+
+\thispagestyle{no_number}
+
+\newpage
+
+\pagenumbering{roman}
+
+```{=tex}
+
+\tableofcontents
+```
+\newpage
+
+```{=tex}
+\pagenumbering{arabic}
+\pagestyle{plain}
+```
+
+```{r, echo=FALSE}
+
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE, fig.align="center", fig.pos="H", digits=2)
+
+```
+
+```{r packages, include=FALSE}
+
+library(tidyverse)
+library(econdatar)
+library(lubridate)
+library(scales)
+library(ggrepel)
+library(tibbletime)
+library(readxl)
+library(lemon) 
+library(tseries)
+library(forecast)
+library(stargazer)
+library(gridExtra)
+library(tinytex)
+library(kableExtra)
+
+```
+
+```{r data_loading_and_theme}
+
+source("~/GitHub/sample_code/code/reading_econdata.R")
+source("~/GitHub/sample_code/code/graph_theme.R")
+source("~/GitHub/sample_code/code/data_wrangling.R")
+
+```
+
+
+\newpage 
+
+
+# Introduction
+
+
+# National Accounts
+
+```{r, fig.height=6, out.width='99%'}
+
+options(scipen = 999)
+
+g <- data %>%
+  select(-`inflation`) %>% 
+  pivot_longer(-date, names_to = "indicator", values_to = "values") %>%
+  ggplot(aes(x = date, y = values, color = indicator)) +
+  geom_line(size=0.7) +
+  labs(title="National Accounts", 
+       subtitle="South Africa",
+       x = "Date",
+       y = "Indicator")+
+  facet_wrap(~indicator, scales= "free", nrow = 5)+
+  scale_colour_manual(values=c(core))+
+  graph_theme() +
+  theme(legend.position="none")
+g
+
+```
+```{r}
+
+
+g <-
+  ggplot() +
+  geom_hline(
+      yintercept = 0,
+      linetype = "dotted",
+      colour = "black",
+      size = 0.3
+    ) +
+  geom_line(data=growth_rates %>% filter(account != "GDP"),
+            aes(x = date, y = accounts_dot, color = account),
+            size=0.7) +
+  geom_label_repel(
+      data = growth_rates %>% 
+        filter(account !="GDP") %>% 
+        filter(date == last(date)),
+      aes(x = date, y = accounts_dot, label=account),
+      color = c("#283d3b","#197278","#83a8a6")) +
+  labs(title="Growth Rates", 
+       subtitle="South Africa",
+       x = "Date",
+       y = "Growth Rate")+
+  scale_colour_manual(values=c(core))+
+  graph_theme() +
+  theme(legend.position="none",axis.line.x = element_blank())
+g
+
+g <-
+  ggplot() +
+  geom_hline(
+      yintercept = 0,
+      linetype = "dotted",
+      colour = "black",
+      size = 0.3
+    ) +
+  geom_line(data=growth_rates %>% filter(account != "GDP"),
+            aes(x = date, y = accounts_dot, color = account),
+            size=0.7) +
+  geom_line(data=growth_rates %>% filter(account=="GDP"),
+            aes(x = date, y = accounts_dot, color = account),
+            size=0.7, colour="#772e25") +
+  geom_label_repel(
+      data = growth_rates %>% 
+        filter(account !="GDP") %>% 
+        filter(date == last(date)),
+      aes(x = date, y = accounts_dot, label=account),
+      color = c("#283d3b","#197278","#83a8a6")) +
+  geom_label_repel(
+      data = growth_rates %>% 
+        filter(account=="GDP",date>="2003-06-30") %>% 
+        filter(date == first(date)),
+      aes(x = date, y = accounts_dot, label=account),
+      color = "#772e25") +
+  labs(title="Growth Rates", 
+       subtitle="South Africa",
+       x = "Date",
+       y = "Growth Rate")+
+  scale_colour_manual(values=alpha(c(core),0.3))+
+  graph_theme () +
+  theme(legend.position="none",axis.line.x = element_blank())
+g
+
+```
+```{r}
+
+
+g<- data %>% 
+  mutate(date=as.Date(date)) %>% 
+  select(date, Consumption, `Government Spending`, Investment) %>% 
+  pivot_longer(-date, names_to="account", values_to="values") %>% 
+  ggplot() +
+    geom_area(
+      aes(x = date, y = values, fill = account),
+      position = "fill")+
+    scale_y_continuous(
+      expand = c(0, 0)) + 
+    scale_x_date(
+      expand = c(0, 0),
+      date_breaks="2 years", 
+      date_labels="%Y")+
+  graph_theme() +
+    scale_fill_manual(
+      values = c(core), 
+      guide = guide_legend(reverse = FALSE))
+
+g
+
+```
+
+\newpage
+
+# Conclusion
