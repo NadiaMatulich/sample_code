@@ -1,14 +1,16 @@
 
 # Document Colours
 
-core<-c("#283d3b",
-       "#197278",
-       "#83a8a6",
-       "#edddd4",
-       "#ae9d96",
-       "#d99185",
-       "#c44536",
-       "#772e25")
+
+core <- c("#14213D",    # Dark Blue
+          "#FCA311",    # Orange
+          "#999999",    # Light Grey
+          "#7D3400",    # Darker Orange
+          "#000000",    # Black
+          "#1B3A5A",    # Lighter Dark Blue
+          "#333333",    # Dark Grey
+          "#E86900",    # Another Orange
+          "#FFFFFF")    # White
 
 # Define Theme
 
@@ -29,9 +31,9 @@ graph_theme <-function(){
     legend.box = "horizontal",
     legend.box.just = "center", 
     strip.background = element_rect(fill = "white"),
-    strip.text = element_text(colour = "#283d3b", face="bold"),
-    plot.title = element_text(size = 14, color = "#283d3b", face = "bold"),
-    plot.subtitle = element_text(size = 12, face = "bold", color = "#197278"), 
-    plot.caption = element_text(size = 12, color = "#772e25")
+    strip.text = element_text(colour = "#14213D", face="bold"),
+    plot.title = element_text(size = 14, color = "#14213D", face = "bold"),
+    plot.subtitle = element_text(size = 12, face = "bold", color = "#1B3A5A"), 
+    plot.caption = element_text(size = 12, color = "#E86900")
   )
 }

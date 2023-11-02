@@ -1,7 +1,6 @@
 
 # Some Data Wrangling
 
-
 # Convert inflation from monthly to quarterly
 
 inflation<-inflation %>% 
@@ -24,6 +23,10 @@ growth_rates<-data %>%
   group_by(account) %>% 
   mutate(accounts_dot=round((((values/lag(values,1))-1)*100),2)) %>% 
   select(-values)
+
+# Create Variables indicating proportion of each account as a total of GDP
+# Didn't ultimately use this data as the geom_area graph doesnt need it
+# Included here as another example of some data wrangling 
 
 proportions<-data %>% 
   select(-`GDP`,-`GDE`,-`inflation`,-`Residual`) %>% 
