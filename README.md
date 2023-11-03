@@ -1,5 +1,5 @@
 
-```{r packages, include=FALSE}
+```{r}
 
 library(tidyverse)
 library(econdatar)
@@ -17,8 +17,6 @@ library(tinytex)
 library(kableExtra)
 
 ```
-
-
 
 \newpage 
 
