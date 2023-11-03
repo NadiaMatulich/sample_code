@@ -4,7 +4,6 @@ source("~/GitHub/sample_code/code/reading_econdata.R")
 source("~/GitHub/sample_code/code/graph_theme.R")
 source("~/GitHub/sample_code/code/data_wrangling.R")
 
-
 # Plotting data to establish first visualisation
 
 g_data <- data %>%

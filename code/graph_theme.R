@@ -3,13 +3,13 @@
 
 
 core <- c("#14213D",    # Dark Blue
-          "#FCA311",    # Orange
+          "#E86900",    # Orange
           "#999999",    # Light Grey
           "#7D3400",    # Darker Orange
           "#000000",    # Black
           "#1B3A5A",    # Lighter Dark Blue
           "#333333",    # Dark Grey
-          "#E86900",    # Another Orange
+          "#FCA311",    # Another Orange
           "#FFFFFF")    # White
 
 # Define Theme

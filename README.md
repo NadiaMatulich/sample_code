@@ -1,6 +1,6 @@
 # Sample
 
-This exercise sets out to retreive, clean and plot national accounts data for South Africa.
+This exercise sets out to retrieve, clean and plot national accounts data for South Africa.
 
 Four files are included in the code folder:
 
