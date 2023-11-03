@@ -1,6 +1,6 @@
 # Sample
 
-This exercise sets out to retreive, clean and plot National Accounts Data for South Africa.
+This exercise sets out to retreive, clean and plot national accounts data for South Africa.
 
 Four files are included in the code folder:
 
@@ -11,9 +11,10 @@ Four files are included in the code folder:
 - data_wrangling.R joins the national accounts data to the inflation data, and performs some operations:
   - Convert the inflation data from monthly to quarterly
   - Calculates annual growth rates
-  - Calculates the proportions that Consumption, Government Spending, Investment and Net Exports contribute to GDP.
+  - Calculates the proportions that consumption, government spending, investment and net exports contribute to GDP.
 
 - graphing.R imports and then plots this data, and the plots are imported and shown in the sample_readme. For the "clean" document, please see the pdf, and for the code, please see the .rmd file. 
 
 (Please note, my .Renviron file contains my login credentials to Econdata that makes this run but that document has been placed in the gitignore)
+
 
