@@ -2,6 +2,20 @@
 
 # National Accounts
 
+library(tidyverse)
+library(econdatar)
+library(lubridate)
+library(scales)
+library(ggrepel)
+library(tibbletime)
+library(readxl)
+library(lemon) 
+library(tseries)
+library(forecast)
+library(stargazer)
+library(gridExtra)
+library(tinytex)
+library(kableExtra)
 
 # From Econdata portal by codera, import the key national accounts variables
 
@@ -45,4 +59,5 @@ econ_data<-econ_data()
 # monthly data is converted to quarterly using mean 
 
 inflation<- read_excel("data/inflation.xlsx") %>% 
-  as_tibble() 
+  as_tibble() %>% 
+  rename(Inflation=inflation)

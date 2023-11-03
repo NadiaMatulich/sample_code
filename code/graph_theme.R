@@ -20,7 +20,7 @@ graph_theme <-function(){
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.text = element_text(size = 7, color = "black"),
-    axis.title = element_blank(),
+    axis.title = element_text(size = 7, color = "black"),
     axis.ticks = element_blank(), 
     axis.line.x = element_line(colour = "black", size=0.3),
     axis.line.y=element_line(colour="black", size=0.3),
@@ -33,7 +33,7 @@ graph_theme <-function(){
     strip.background = element_rect(fill = "white"),
     strip.text = element_text(colour = "#14213D", face="bold"),
     plot.title = element_text(size = 14, color = "#14213D", face = "bold"),
-    plot.subtitle = element_text(size = 12, face = "bold", color = "#1B3A5A"), 
+    plot.subtitle = element_text(size = 12, face = "bold", color = "#E86900"), 
     plot.caption = element_text(size = 12, color = "#E86900")
   )
 }

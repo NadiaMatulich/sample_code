@@ -7,7 +7,7 @@ inflation<-inflation %>%
   mutate(qdate = ceiling_date(date, "quarter")-days(1)) %>%
   group_by(qdate) %>%
   arrange(desc(date)) %>% 
-  summarise(inflation = mean(inflation)) %>% 
+  summarise(Inflation = mean(Inflation)) %>% 
   rename(date=qdate)
 
 # Join Data to one table
@@ -21,7 +21,7 @@ growth_rates<-data %>%
   select(date, `Consumption`, `Investment`, `Government Spending`, `GDP`) %>% 
   pivot_longer(-date, names_to="account", values_to="values") %>% 
   group_by(account) %>% 
-  mutate(accounts_dot=round((((values/lag(values,1))-1)*100),2)) %>% 
+  mutate(accounts_dot=round((((values/lag(values,4))-1)*100),2)) %>% 
   select(-values)
 
 # Create Variables indicating proportion of each account as a total of GDP
@@ -29,7 +29,7 @@ growth_rates<-data %>%
 # Included here as another example of some data wrangling 
 
 proportions<-data %>% 
-  select(-`GDP`,-`GDE`,-`inflation`,-`Residual`) %>% 
+  select(-`GDP`,-`GDE`,-`Inflation`,-`Residual`) %>% 
   mutate(`Net Exports`=`Exports`-`Imports`) %>% 
   select(-`Exports`,-`Imports`) %>% 
   pivot_longer(-date, names_to="account", values_to="values") %>%

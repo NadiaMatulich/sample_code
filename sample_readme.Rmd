@@ -31,13 +31,11 @@ header-includes:
 
 \normalsize
 
-Details here 
-
 \hrulefill
 
-**Executive Summary**
+Author: Nadia Matulich \newline
 
-Summary here \newline
+Purpose: This document shows the graphs generated for this coding exercise. 
 
 \hrulefill
 
@@ -60,7 +58,9 @@ Summary here \newline
 
 ```{r, echo=FALSE}
 
-knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE, fig.align="center", fig.pos="H", digits=2)
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE, fig.align="left", fig.pos="H", digits=2)
+
+options(scipen = 999) # to ensure numbers dont print in scientific notation
 
 ```
 
@@ -83,133 +83,71 @@ library(kableExtra)
 
 ```
 
-```{r data_loading_and_theme}
+
+\newpage 
+
+# Introduction
+
+This exercise sets out to retreive, clean and plot National Accounts Data for South Africa.
+
+Four files are included in the code folder:
+
+- reading_econdata.R uses the EconData portal by Codera [https://www.econdata.co.za](see here for more) to read in data as well as an excel document in the data folder. The framework is provided by econdata, however, it provides the data as a large list, however, I have written the function to convert the data to a data frame. 
+
+- graph_theme.R specifies colours and some preferences for graphing. These are some of my graphing preferences that I found myself using when making graphs (minimalist, very clean), so it has just been written as a theme I can call on when needed. A colour scheme is also specified here.
+
+- data_wrangling.R joins the national accounts data to the inflation data, and performs some operations:
+  - Convert the inflation data from monthly to quarterly
+  - Calculates annual growth rates
+  - Calculates the proportions that Consumption, Government Spending, Investment and Net Exports contribute to GDP.
+
+- graphing.R plots this data, and the plots are imported and shown below.
+
+(Please note, there is a file on my PC with my login credentials to Econdata that makes this run, that has been placed in the gitignore)
+
+Running the following code to ensure the data and graphs are up to date with the latest dat: 
+
+```{r}
 
 source("~/GitHub/sample_code/code/reading_econdata.R")
 source("~/GitHub/sample_code/code/graph_theme.R")
 source("~/GitHub/sample_code/code/data_wrangling.R")
+source("~/GitHub/sample_code/code/graphing.R")
 
 ```
-
-
-\newpage 
-
-
-# Introduction
-
 
 # National Accounts
 
-```{r, fig.height=6, out.width='99%'}
+Here is a snapshot of the National Accounts Data
+```{r}
 
-options(scipen = 999)
-
-g <- data %>%
-  select(-`inflation`) %>% 
-  pivot_longer(-date, names_to = "indicator", values_to = "values") %>%
-  ggplot(aes(x = date, y = values, color = indicator)) +
-  geom_line(size=0.7) +
-  labs(title="National Accounts", 
-       subtitle="South Africa",
-       x = "Date",
-       y = "Indicator")+
-  facet_wrap(~indicator, scales= "free", nrow = 5)+
-  scale_colour_manual(values=c(core))+
-  graph_theme() +
-  theme(legend.position="none")
-g
+knitr::include_graphics("figures/g_data.png")
 
 ```
+
+Final Household Consumption, Government Spending and Fixed Private Investment growth rates are shown next, then in the second graph, GDP is superimposed to graphically assess the sensitivity of GDP to spikes in its core components.
+
 ```{r}
 
 
-g <-
-  ggplot() +
-  geom_hline(
-      yintercept = 0,
-      linetype = "dotted",
-      colour = "black",
-      size = 0.3
-    ) +
-  geom_line(data=growth_rates %>% filter(account != "GDP"),
-            aes(x = date, y = accounts_dot, color = account),
-            size=0.7) +
-  geom_label_repel(
-      data = growth_rates %>% 
-        filter(account !="GDP") %>% 
-        filter(date == last(date)),
-      aes(x = date, y = accounts_dot, label=account),
-      color = c("#283d3b","#197278","#83a8a6")) +
-  labs(title="Growth Rates", 
-       subtitle="South Africa",
-       x = "Date",
-       y = "Growth Rate")+
-  scale_colour_manual(values=c(core))+
-  graph_theme() +
-  theme(legend.position="none",axis.line.x = element_blank())
-g
-
-g <-
-  ggplot() +
-  geom_hline(
-      yintercept = 0,
-      linetype = "dotted",
-      colour = "black",
-      size = 0.3
-    ) +
-  geom_line(data=growth_rates %>% filter(account != "GDP"),
-            aes(x = date, y = accounts_dot, color = account),
-            size=0.7) +
-  geom_line(data=growth_rates %>% filter(account=="GDP"),
-            aes(x = date, y = accounts_dot, color = account),
-            size=0.7, colour="#772e25") +
-  geom_label_repel(
-      data = growth_rates %>% 
-        filter(account !="GDP") %>% 
-        filter(date == last(date)),
-      aes(x = date, y = accounts_dot, label=account),
-      color = c("#283d3b","#197278","#83a8a6")) +
-  geom_label_repel(
-      data = growth_rates %>% 
-        filter(account=="GDP",date>="2003-06-30") %>% 
-        filter(date == first(date)),
-      aes(x = date, y = accounts_dot, label=account),
-      color = "#772e25") +
-  labs(title="Growth Rates", 
-       subtitle="South Africa",
-       x = "Date",
-       y = "Growth Rate")+
-  scale_colour_manual(values=alpha(c(core),0.3))+
-  graph_theme () +
-  theme(legend.position="none",axis.line.x = element_blank())
-g
+knitr::include_graphics("figures/g_growth_rates.png")
+knitr::include_graphics("figures/g_growth_rates_gdp.png")
 
 ```
+
+
 ```{r}
 
-
-g<- data %>% 
-  mutate(date=as.Date(date)) %>% 
-  select(date, Consumption, `Government Spending`, Investment) %>% 
-  pivot_longer(-date, names_to="account", values_to="values") %>% 
-  ggplot() +
-    geom_area(
-      aes(x = date, y = values, fill = account),
-      position = "fill")+
-    scale_y_continuous(
-      expand = c(0, 0)) + 
-    scale_x_date(
-      expand = c(0, 0),
-      date_breaks="2 years", 
-      date_labels="%Y")+
-  graph_theme() +
-    scale_fill_manual(
-      values = c(core), 
-      guide = guide_legend(reverse = FALSE))
-
-g
+knitr::include_graphics("figures/g_proportions.png")
 
 ```
+
+```{r}
+
+knitr::include_graphics("figures/g_inflation.png")
+
+```
+
 
 \newpage
 

@@ -4,28 +4,25 @@ source("~/GitHub/sample_code/code/reading_econdata.R")
 source("~/GitHub/sample_code/code/graph_theme.R")
 source("~/GitHub/sample_code/code/data_wrangling.R")
 
+
+# Plotting data to establish first visualisation
+
 g_data <- data %>%
-  select(-`inflation`) %>% 
+  select(-`Inflation`) %>% 
   pivot_longer(-date, names_to = "indicator", values_to = "values") %>%
   ggplot(aes(x = date, y = values, color = indicator)) +
   geom_line(size=0.7) +
   labs(title="National Accounts", 
        subtitle="South Africa",
        x = "Date",
-       y = "Indicator")+
+       y = "Amount (Rand, Millions)")+
   facet_wrap(~indicator, scales= "free", nrow = 5)+
   scale_colour_manual(values=c(core))+
   graph_theme() +
   theme(legend.position="none")
-core <- c("#14213D",    
-          "#FCA311",    
-          "#999999",    
-          "#7D3400",    
-          "#000000",    
-          "#1B3A5A",    
-          "#333333",    
-          "#E86900",    
-          "#FFFFFF")  
+
+# Plotting growth rates for Consumption, Government Spending and Investment
+
 g_growth_rates <-
   ggplot() +
   geom_hline(
@@ -42,14 +39,19 @@ g_growth_rates <-
       filter(account !="GDP") %>% 
       filter(date == last(date)),
     aes(x = date, y = accounts_dot, label=account),
-    color = c("#14213D", "#999999","#333333")) +
+    color = c("#14213D", "#999999","#1B3A5A")) +
   labs(title="Growth Rates", 
        subtitle="South Africa",
        x = "Date",
        y = "Growth Rate")+
-  scale_colour_manual(values=c(core))+
+  scale_colour_manual(values=c("#14213D", "#999999","#1B3A5A"))+
   graph_theme() +
   theme(legend.position="none",axis.line.x = element_blank())
+
+
+# Plotting the same graph as above but with GDP growth superimposed 
+
+# Hoping to see how sensitive GDP is (graphically) to spikes in C I and G
 
 g_growth_rates_gpd <-
   ggplot() +
@@ -64,13 +66,13 @@ g_growth_rates_gpd <-
             size=0.7) +
   geom_line(data=growth_rates %>% filter(account=="GDP"),
             aes(x = date, y = accounts_dot, color = account),
-            size=0.7, colour="#E86900") +
+            size=1, colour="#E86900") +
   geom_label_repel(
     data = growth_rates %>% 
       filter(account !="GDP") %>% 
       filter(date == last(date)),
     aes(x = date, y = accounts_dot, label=account),
-    color = c("#14213D", "#999999","#333333")) +
+    color = alpha(c("#14213D", "#999999","#1B3A5A"),0.7)) +
   geom_label_repel(
     data = growth_rates %>% 
       filter(account=="GDP",date>="2003-06-30") %>% 
@@ -81,9 +83,11 @@ g_growth_rates_gpd <-
        subtitle="South Africa",
        x = "Date",
        y = "Growth Rate")+
-  scale_colour_manual(values=alpha(c(core),0.3))+
+  scale_colour_manual(values=alpha(c("#14213D", "#999999","#1B3A5A"),0.5))+
   graph_theme () +
   theme(legend.position="none",axis.line.x = element_blank())
+
+# Observing relative sizes of Consumption, Government Spending and Investment
 
 g_proportions<- data %>% 
   mutate(date=as.Date(date)) %>% 
@@ -99,10 +103,16 @@ g_proportions<- data %>%
     expand = c(0, 0),
     date_breaks="2 years", 
     date_labels="%Y")+
+  labs(title="Proportions of National Accounts", 
+       subtitle="South Africa",
+       x = "Date",
+       y = "Proportion")+
   graph_theme() +
   scale_fill_manual(
     values = c(core), 
     guide = guide_legend(reverse = FALSE))
+
+# Plotting inflation and GDP to get a sense of how the two relate to each other
 
 g_inflation <-
   ggplot() +
@@ -112,44 +122,50 @@ g_inflation <-
     colour = "black",
     size = 0.3
   ) +
-  geom_line(data=inflation %>% 
-            pivot_longer(-date, names_to="variable", values_to="values"),
-            filter(variable="inflation"),
+  geom_line(data=data %>% 
+            pivot_longer(-date, names_to="variable", values_to="values") %>% 
+            filter(variable=="Inflation"),
             aes(x = date, y = values, color = variable),
+            colour="#14213D",
             size=0.7) +
   geom_line(data=growth_rates %>% filter(account=="GDP"),
             aes(x = date, y = accounts_dot, color = account),
             size=0.7, colour="#E86900") +
   geom_label_repel(
-    data = growth_rates %>% 
-      filter(account !="GDP") %>% 
+    data=data %>% 
+      pivot_longer(-date, names_to="variable", values_to="values") %>% 
+      filter(variable=="Inflation") %>% 
       filter(date == last(date)),
-    aes(x = date, y = accounts_dot, label=account),
-    color = c("#14213D", "#999999","#333333")) +
+    aes(x = date, y = values, label=variable),
+    color = "#14213D") +
   geom_label_repel(
     data = growth_rates %>% 
-      filter(account=="GDP",date>="2003-06-30") %>% 
-      filter(date == first(date)),
+      filter(account=="GDP") %>% 
+      filter(date == last(date)),
     aes(x = date, y = accounts_dot, label=account),
     color = "#E86900") +
   labs(title="Growth Rates", 
        subtitle="South Africa",
        x = "Date",
        y = "Growth Rate")+
-  scale_colour_manual(values=alpha(c("#14213D", "#999999","#333333"),0.3))+
   graph_theme () +
   theme(legend.position="none",axis.line.x = element_blank())
 
+g_inflation
 
-ggsave(file.path("figures","g_data.png"), plot=g_data, width=5, height=6)
+width<-6
+height<-6
 
-ggsave(file.path("figures","g_growth_rates.png"), plot=g_growth_rates, width=5, height=6)
+ggsave(file.path("figures","g_data.png"), plot=g_data, width=width, height=height)
 
-ggsave(file.path("figures","g_growth_rates_gdp.png"), plot=g_growth_rates_gpd, width=5, height=6)
+ggsave(file.path("figures","g_growth_rates.png"), plot=g_growth_rates, width=width, height=height)
 
-ggsave(file.path("figures","g_proportions.png"), plot=plot_data, width=5, height=6)
+ggsave(file.path("figures","g_growth_rates_gdp.png"), plot=g_growth_rates_gpd, width=width, height=height)
 
-ggsave(file.path("figures","g_inflation"), plot=g_inflation, width=5, height=6)
+ggsave(file.path("figures","g_proportions.png"), plot=g_proportions, width=width, height=height)
+
+ggsave(file.path("figures","g_inflation.png"), plot=g_inflation, width=width, height=height)
+
 
 
 
